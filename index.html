@@ -6,6 +6,12 @@
 <title>Biovagal Breathing App · Slow breathing with chakra bowl tones</title>
 <meta name="description" content="Biovagal's slow-breathing timer: breathe in through your nose, out through your mouth, to a soft bowl tone. Free 10-minute sessions; members unlock all seven chakra tones, longer sessions and the theta binaural layer.">
 <link rel="canonical" href="https://biovagal.co.uk/">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#140b33">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Biovagal">
 <meta property="og:title" content="Biovagal Breathing App">
 <meta property="og:description" content="Slow breathing with chakra bowl tones. Free to try.">
 <meta property="og:url" content="https://biovagal.co.uk/">
@@ -104,6 +110,32 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
 .dim{position:fixed;inset:0;background:#000;opacity:0;transition:opacity 4s;pointer-events:none;z-index:5}.dim.on{opacity:.92;pointer-events:auto}
 .legal{text-align:center;font-size:12px;color:var(--muted);margin:0}
 .legal a{color:var(--muted)}
+.path{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.path li{display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.2)}
+.path li i{width:14px;height:14px;border-radius:50%;background:var(--d);box-shadow:0 0 10px var(--d)}
+.path li b{font:600 15px var(--font-display)}
+.path li small{display:block;font:400 12px var(--font-mono);color:var(--muted)}
+.path li a{font:600 13px var(--font-body);white-space:nowrap}
+.path li.done{opacity:.55}.path li.done b::after{content:" ✓";color:var(--gold)}
+.path li.now{border-color:var(--d);box-shadow:0 0 18px color-mix(in srgb,var(--d) 35%,transparent);background:color-mix(in srgb,var(--d) 14%,transparent)}
+.bar{height:10px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--spectrum);border-radius:99px;transition:width .6s}
+.pathhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.pathhead strong{font:700 20px var(--font-display)}
+.small{font-size:13px;padding:8px 14px;min-height:38px}
+.inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input[type=time]{font:500 15px var(--font-mono);background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:8px 10px;min-height:40px}
+.scale{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.scale button{padding:0;min-height:36px;font:600 14px var(--font-mono);border-radius:10px}
+.scale button[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 35%,transparent)}
+textarea{width:100%;min-height:90px;font:15px/1.5 var(--font-body);color:var(--fg);background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:14px;padding:12px;resize:vertical}
+.spark{display:flex;align-items:flex-end;gap:4px;height:60px}
+.spark i{flex:1;max-width:22px;border-radius:4px 4px 0 0;background:var(--spectrum);min-height:3px}
+.entries{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto}
+.entries div{border-left:3px solid var(--gold);padding:4px 10px;font-size:14px}
+.entries small{display:block;color:var(--muted);font:400 12px var(--font-mono)}
+.shop a.item{display:flex;justify-content:space-between;align-items:center;gap:10px;text-decoration:none;color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:rgba(0,0,0,.2)}
+.shop a.item span{font:400 13px var(--font-mono);color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.orb{transition:none}.ring.r0,.ring.r2,body::before,body::after{animation:none}}
 </style>
 </head>
@@ -124,7 +156,7 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
     </div>
   </section>
 
-  <p class="hint" style="text-align:center;margin:-8px 0 0">Breathe in through your nose for 5, out through your mouth for 5, following the circle and a soft bowl tone. Pick a length and press Begin.</p>
+  <p class="hint" style="text-align:center;margin:-8px 0 0">Breathe with the circle and a soft bowl tone: in through your nose, out through your mouth. Pick a pattern and a length, then press Begin.</p>
   <div class="clock" id="clock" aria-live="off">10:00</div>
 
   <div class="row" id="lengths" role="group" aria-label="Session length">
@@ -138,7 +170,32 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
     <button class="chip" data-min="420" aria-pressed="false">7 hr sleep</button>
   </div>
   <p class="hint" id="sleepNote" hidden style="text-align:center">Sleep sessions: the breathing guide fades after 10 minutes, the bowls slow to once a minute and soften, and the screen dims (tap to wake it). Keep the phone plugged in and this page open. Some phones pause sound when the screen locks; if that happens, use the 7-hour videos on YouTube below.</p>
+  <div class="row" id="patterns" role="group" aria-label="Breathing pattern"></div>
+  <p class="hint" id="patNote" style="text-align:center;margin:-6px 0 0"></p>
+  <section class="panel" style="padding:14px">
+    <h2>Calm check <span class="hint" style="text-transform:none;letter-spacing:0;color:var(--muted)">(optional)</span></h2>
+    <p class="hint">How calm do you feel right now? 1 is tense, 10 is deeply calm.</p>
+    <div class="scale" id="calmBefore"></div>
+  </section>
   <div class="row"><button class="go" id="go">Begin</button></div>
+  <section class="panel" id="after" hidden>
+    <h2>After your session</h2>
+    <p class="hint">How calm do you feel now?</p>
+    <div class="scale" id="calmAfter"></div>
+    <p class="hint" id="calmDiff"></p>
+    <p class="hint"><strong id="jPrompt">Journal</strong></p>
+    <textarea id="jText" placeholder="Write a few lines. This stays on your phone."></textarea>
+    <div class="row" style="justify-content:flex-start"><button class="small" id="jSave" type="button">Save entry</button><button class="go small" id="shareBtn" type="button">Share my streak</button></div>
+  </section>
+
+  <section class="panel" id="pathPanel">
+    <h2>Root to Integration</h2>
+    <div class="pathhead"><strong id="pathNow">Stage 1 · Root</strong><span class="hint" id="pathDays">Day 0 of 21</span></div>
+    <div class="bar"><span id="pathBar" style="width:0%"></span></div>
+    <p class="hint" id="pathTip">Three weeks on each chakra, Root to Crown, then three weeks on the integration of all seven. Each day you complete a session counts.</p>
+    <div class="row" style="justify-content:flex-start"><button class="go small" id="pathGo" type="button">Use today's tone</button><button class="small" id="pathReset" type="button">Restart path</button></div>
+    <ul class="path" id="path"></ul>
+  </section>
 
   <section class="panel">
     <h2>Bowl tone</h2>
@@ -146,8 +203,10 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
     <p class="hint">A soft synthesised bowl sounds every 20 seconds, and three together at the end. Each tone is traditionally associated with one of the seven chakras.</p>
     <label class="sw" for="bin">
       <input type="checkbox" id="bin">
-      <span><strong>Theta binaural layer</strong> <span class="badge" id="binBadge">Members</span><br><span class="hint">Headphones required. A quiet tone sits under the bowls, slightly different in each ear.</span></span>
+      <span><strong>Brainwave binaural layer</strong> <span class="badge" id="binBadge">Members</span><br><span class="hint">Headphones required. A quiet tone sits under the bowls, slightly different in each ear. Choose the brainwave band below.</span></span>
     </label>
+    <div class="row" id="brain" role="group" aria-label="Brainwave band" style="justify-content:flex-start"></div>
+    <p class="hint" id="brainNote"></p>
     <label for="vol" class="hint">Volume</label>
     <input type="range" id="vol" min="0" max="100" value="45">
   </section>
@@ -156,18 +215,50 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
     <h2>This week</h2>
     <p class="hint" id="stats" hidden></p>
     <div class="week" id="week"></div>
+    <div class="inline" style="justify-content:space-between"><span class="hint" id="streakLine"></span><button class="small" id="shareBtn2" type="button">Share streak</button></div>
+    <p class="hint" id="calmLine"></p>
+    <div class="spark" id="spark" aria-label="Calm change over recent sessions"></div>
     <p class="hint" id="weekNote">Practise 30 minutes a day for 3 weeks. Marks appear here after you finish a session on this device.</p>
   </section>
 
   <section class="panel">
     <h2>Biovagal videos</h2>
     <div class="links" style="flex-direction:column;gap:8px">
-      <a href="https://www.youtube.com/@biovagal/videos" rel="noopener">The 7-chakra series (30 minutes each)</a>
+      <a href="https://www.youtube.com/@biovagal/videos" rel="noopener">All videos</a>
       <a href="https://www.youtube.com/@biovagal/search?query=7%20hour" rel="noopener">7-hour sleep versions</a>
       <a href="https://www.youtube.com/@biovagal/search?query=integration" rel="noopener">Root to Integration: all seven chakras</a>
       <a href="https://www.youtube.com/@biovagal/shorts" rel="noopener">Shorts</a>
     </div>
-    <p class="hint">Headphones required for the binaural layer in every video.</p>
+    <p class="hint">Each chakra's own videos are linked in the Root to Integration list above. Headphones required for the binaural layer in every video.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Keep it on your phone</h2>
+    <p class="hint">Add Biovagal to your home screen. It opens like an app and works offline.</p>
+    <div class="row" style="justify-content:flex-start"><button class="small" id="installBtn" type="button">Install the app</button></div>
+    <p class="hint" id="installHint" hidden></p>
+    <p class="hint">Daily reminder: pick a time and add it to your phone's calendar.</p>
+    <div class="inline"><input type="time" id="remTime" value="20:00" aria-label="Reminder time"><button class="small" id="remBtn" type="button">Add daily reminder</button></div>
+  </section>
+
+  <section class="panel">
+    <h2>Journal</h2>
+    <p class="hint">Your notes after each session. Saved only on this device.</p>
+    <div class="entries" id="entries"><p class="hint">No entries yet. Finish a session to get today's prompt.</p></div>
+  </section>
+
+  <section class="panel shop">
+    <h2>Shop</h2>
+    <p class="hint"><strong>Biovagal merch</strong>: tees, hoodies, mugs and stickers with the chakra and sacred-geometry designs. Coming soon.</p>
+    <p class="hint"><strong>Gear for your practice</strong></p>
+    <div class="links" style="flex-direction:column;gap:8px">
+      <a class="item" href="https://www.amazon.co.uk/s?k=over+ear+headphones&amp;tag=biovagal-2" rel="noopener sponsored">Headphones <span>for the binaural layers ▸</span></a>
+      <a class="item" href="https://www.amazon.co.uk/s?k=sleep+headphones+headband&amp;tag=biovagal-2" rel="noopener sponsored">Sleep headband <span>for 7-hour sessions ▸</span></a>
+      <a class="item" href="https://www.amazon.co.uk/s?k=silk+sleep+eye+mask&amp;tag=biovagal-2" rel="noopener sponsored">Eye mask <span>for sleep sessions ▸</span></a>
+      <a class="item" href="https://www.amazon.co.uk/s?k=meditation+cushion&amp;tag=biovagal-2" rel="noopener sponsored">Meditation cushion <span>for daily practice ▸</span></a>
+      <a class="item" href="https://www.amazon.co.uk/s?k=yoga+mat&amp;tag=biovagal-2" rel="noopener sponsored">Yoga mat <span>for floor sessions ▸</span></a>
+    </div>
+    <p class="hint">As an Amazon Associate, Biovagal earns from qualifying purchases.</p>
   </section>
 
   <section class="panel" id="plan">
@@ -176,13 +267,15 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
       <ul class="perks">
         <li>20 and 30 minute sessions</li>
         <li>All seven chakra bowl tones</li>
-        <li>Quiet theta binaural layer (headphones required)</li>
+        <li>Seven brainwave binaural bands, epsilon to lambda (headphones required)</li>
         <li>1, 3 and 7 hour sleep sessions</li>
-        <li>Your streak, days practised and total minutes</li>
+        <li>The full Root to Integration path</li>
+        <li>All breathing patterns: box, 4-7-8, sigh and heart coherence</li>
+        <li>Your days practised and total minutes</li>
         <li>Printable 21-day practice tracker</li>
       </ul>
       <div class="buy">
-        <a id="buyLife" class="best" href="#" rel="noopener"><span><b>£19.99</b> once</span><span>Lifetime</span></a>
+        <a id="buyLife" class="best" href="#" rel="noopener"><span><b>£11.99</b> once</span><span>Lifetime</span></a>
         <a id="buyMonth" href="#" rel="noopener"><span><b>£2.99</b> / month</span><span>Cancel any time</span></a>
       </div>
       <p class="hint">Secure checkout by Stripe. Members unlock straight away on the device you pay on.</p>
@@ -199,7 +292,7 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
     <div class="links">
       <a href="https://www.youtube.com/@biovagal" rel="noopener">Biovagal on YouTube</a>
     </div>
-    <p style="margin-top:14px">Breathe slowly and comfortably. Never hold your breath or breathe fast. If anything feels uncomfortable, stop and breathe normally. For relaxation only. Not medical advice. Do not use while driving.</p>
+    <p style="margin-top:14px">Breathe slowly and comfortably. Never strain or breathe fast, and keep any holds gentle; if a hold feels uncomfortable, use the 5 in, 5 out pattern. If anything feels uncomfortable, stop and breathe normally. For relaxation only. Not medical advice. Do not use while driving.</p>
     <p class="legal">&copy; 2026 Biovagal. All rights reserved. &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></p>
   </footer>
 </main>
@@ -209,9 +302,16 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
 <script>
 (function(){
   /* Checkout links. After payment Stripe returns to https://biovagal.co.uk/?paid={CHECKOUT_SESSION_ID} */
-  var CONFIG={monthUrl:'https://buy.stripe.com/fZu7sN4UIegfce5e0t0Ny04',lifeUrl:'https://buy.stripe.com/14A7sNfzmgon0vn3lP0Ny05'};
+  var CONFIG={monthUrl:'https://buy.stripe.com/fZu7sN4UIegfce5e0t0Ny04',lifeUrl:'https://buy.stripe.com/bJe5kF0Es7RR91TbSl0Ny06'};
   var TONES=[['396','Root','#ff3b47','#ff8a1f'],['417','Sacral','#ff8a1f','#ffd23f'],['528','Solar Plexus','#ffd23f','#ff8a1f'],['639','Heart','#3ddc84','#2fb6ff'],['741','Throat','#2fb6ff','#6c63ff'],['852','Third Eye','#6c63ff','#c45cff'],['963','Crown','#c45cff','#ff6bd6']];
-  var state={min:10,tone:396,running:false,t0:0,lastBowl:-1,ctx:null,master:null,bin:null,wake:null,raf:0};
+  var BRAIN=[['Epsilon',0.5,'Below 0.5 Hz. Associated with very deep stillness.',180],['Delta',2,'0.5 to 4 Hz. Associated with deep, dreamless sleep.',180],['Theta',6,'4 to 8 Hz. Associated with dreamy, meditative states.',200],['Alpha',10,'8 to 12 Hz. Associated with relaxed, calm awareness.',220],['Beta',16,'12 to 30 Hz. Associated with alert, focused thinking.',240],['Gamma',40,'30 to 100 Hz. Associated with high focus.',260],['Lambda',100,'Above 100 Hz. Associated in some traditions with expansive states. Heard more as a flutter than a beat.',300]];
+  var PATTERNS=[
+    {n:'5 in · 5 out',k:'bv',free:true,ph:[['Nose in',5,'in'],['Mouth out',5,'out']],note:'The Biovagal rhythm: six slow breaths a minute.'},
+    {n:'Heart coherence',k:'hc',ph:[['Nose in',5.5,'in'],['Mouth out',5.5,'out']],note:'5.5 in, 5.5 out: about 5.5 breaths a minute.'},
+    {n:'Box',k:'box',ph:[['Nose in',4,'in'],['Hold',4,'hold'],['Mouth out',4,'out'],['Hold',4,'rest']],note:'4 in, hold 4, out 4, hold 4. Keep the holds soft.'},
+    {n:'4-7-8',k:'478',ph:[['Nose in',4,'in'],['Hold',7,'hold'],['Mouth out',8,'out']],note:'4 in, hold 7, out 8. Good before sleep. Shorten the hold if needed.'},
+    {n:'Sigh',k:'sigh',ph:[['Nose in',2,'in'],['Top up',1,'top'],['Mouth out',6,'out']],note:'Two inhales through the nose, then a long slow sigh out.'}];
+  var state={pat:0,brain:2,min:10,tone:396,running:false,t0:0,lastBowl:-1,ctx:null,master:null,bin:null,wake:null,raf:0};
   var $=function(id){return document.getElementById(id)};
   var FREE_TONE=396;
   function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
@@ -246,7 +346,7 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
     b.textContent=t[0]+' Hz '+t[1];b.setAttribute('aria-pressed',i===0?'true':'false');b.dataset.hz=t[0];
     b.addEventListener('click',function(){
       if(+t[0]!==FREE_TONE&&!isMember()){toPlan('The other six bowl tones are for members.');return}
-      state.tone=+t[0];paint(t);
+      state.tone=+t[0];state.integrate=false;paint(t);
       tonesEl.querySelectorAll('.chip').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
       if(state.ctx&&state.running)bowl(state.tone,1);
     });
@@ -282,7 +382,7 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
   function startBin(){
     stopBin();if(!state.ctx||!$('bin').checked)return;
     var c=state.ctx,L=c.createOscillator(),R=c.createOscillator(),g=c.createGain(),m=c.createChannelMerger(2);
-    L.frequency.value=200;R.frequency.value=206;g.gain.value=0;
+    var bw=BRAIN[state.brain];L.frequency.value=bw[3];R.frequency.value=bw[3]+bw[1];g.gain.value=0;
     L.connect(m,0,0);R.connect(m,0,1);m.connect(g);g.connect(state.master);
     g.gain.setTargetAtTime(.05,c.currentTime,2);
     L.start();R.start();state.bin={L:L,R:R,g:g};
@@ -301,17 +401,21 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
     if(!state.running)return;
     var el=(performance.now()-state.t0)/1000,total=state.min*60;
     if(el>=total){finish();return}
-    var ph=el%10,inh=ph<5,x=inh?ph/5:(10-ph)/5,n=Math.floor(ph%5)+1;
+    var P=PATTERNS[state.pat].ph,T=0;P.forEach(function(q){T+=q[1]});
+    var t=el%T,j=0;while(t>=P[j][1]){t-=P[j][1];j++}
+    var q=P[j],f=t/q[1],x=q[2]==='in'?f*.85:q[2]==='top'?.85+.15*f:q[2]==='hold'?1:q[2]==='out'?1-f:0;
+    if(q[2]==='in'&&P[j+1]&&P[j+1][2]!=='top')x=f;
+    if(q[2]==='out'){var prev=P[j-1];x=(prev&&prev[2]==='top')?1-f:1-f}
     orb.style.transform='scale('+(0.6+0.55*ease(x)).toFixed(3)+')';
-    cue.firstChild.nodeValue=inh?'Nose in':'Mouth out';
-    count.textContent=n;
+    cue.firstChild.nodeValue=q[0];
+    count.textContent=Math.floor(t)+1;
     clock.textContent=fmt(total-el);
     var sleep=state.min>=60;
     if(sleep&&el>600){cue.firstChild.nodeValue='Rest';count.textContent='';orb.style.opacity=Math.max(.15,1-(el-600)/600)}
     if(sleep&&el>120&&!state.dimmed){state.dimmed=true;$('dim').classList.add('on')}
     var every=sleep&&el>600?60:20,slot=Math.floor(el/every)+(every===60?100000:0);
     var soft=sleep?Math.max(.3,1-el/1800):1;
-    if(slot!==state.lastBowl){state.lastBowl=slot;bowl(state.tone,soft)}
+    if(slot!==state.lastBowl){state.lastBowl=slot;var tn=state.tone;if(state.integrate){var ti=TONES[((slot%7)+7)%7];tn=+ti[0];paint(ti)}bowl(tn,soft)}
     state.raf=requestAnimationFrame(tick);
   }
   function begin(){
@@ -322,11 +426,11 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
   function reset(){
     cancelAnimationFrame(state.raf);state.running=false;stopBin();unlock();
     go.textContent='Begin';orb.style.transform='scale(.6)';orb.style.opacity=1;state.dimmed=false;$('dim').classList.remove('on');
-    cue.firstChild.nodeValue='Ready';count.textContent='nose in 5 · mouth out 5';setClock();
+    cue.firstChild.nodeValue='Ready';count.textContent=patLabel();setClock();
   }
   function finish(){
     if(state.ctx){[0,.35,.7].forEach(function(d,i){setTimeout(function(){bowl(state.tone*[1,1.25,1.5][i],1)},d*1000)})}
-    markToday();reset();cue.firstChild.nodeValue='Well done';count.textContent='Session complete';
+    markToday();logSession();reset();cue.firstChild.nodeValue='Well done';count.textContent='Session complete';showAfter();
   }
   go.addEventListener('click',function(){state.running?reset():begin()});
   $('dim').addEventListener('click',function(){this.classList.remove('on');var d=this;setTimeout(function(){if(state.running)d.classList.add('on')},15000)});
@@ -346,7 +450,7 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
     if(isMember()){
       var keys=Object.keys(o),tot=0,sess=keys.length;keys.forEach(function(k){tot+=o[k]});
       var streak=0,dd=new Date();if(!o[key(dd)])dd.setDate(dd.getDate()-1);while(o[key(dd)]){streak++;dd.setDate(dd.getDate()-1)}
-      st.hidden=false;st.textContent='Streak: '+streak+' day'+(streak===1?'':'s')+'. Days practised: '+sess+'. Total minutes: '+tot+'.';
+      st.hidden=false;st.textContent='Total minutes: '+tot+'. Sessions logged on '+sess+' day'+(sess===1?'':'s')+'.';
     }else st.hidden=true;
     if(n)$('weekNote').textContent=n+' of 7 days practised this week. Practise 30 minutes a day for 3 weeks.';
   }
@@ -357,11 +461,118 @@ ul.perks li:nth-child(1)::before{background:#ff3b47}ul.perks li:nth-child(2)::be
     $('freeBox').hidden=m;$('memberBox').hidden=!m;$('binBadge').hidden=m;
     document.querySelectorAll('#lengths .chip,#sleepRow .chip').forEach(function(b){b.classList.toggle('locked',!m&&+b.dataset.min>10)});
     document.querySelectorAll('#tones .chip').forEach(function(b){b.classList.toggle('locked',!m&&+b.dataset.hz!==FREE_TONE)});
+    document.querySelectorAll('#patterns .chip').forEach(function(b){b.classList.toggle('locked',!m&&+b.dataset.pat>0)});
+    document.querySelectorAll('#brain .chip').forEach(function(b){b.classList.toggle('locked',!m)});
     var ready=/^https:/.test(CONFIG.monthUrl);
     $('buyMonth').href=ready?CONFIG.monthUrl:'#';$('buyLife').href=ready?CONFIG.lifeUrl:'#';
     drawWeek();
   }
   ['buyMonth','buyLife'].forEach(function(id){$(id).addEventListener('click',function(e){if(!/^https:/.test(this.getAttribute('href'))){e.preventDefault();msg('Checkout opens soon.',true)}})});
+  /* ---- Breathing patterns ---- */
+  function patLabel(){return PATTERNS[state.pat].ph.map(function(q){return q[0].toLowerCase()+' '+q[1]}).join(' · ')}
+  var patEl=$('patterns');
+  PATTERNS.forEach(function(P,i){var b=document.createElement('button');b.className='chip small';b.type='button';b.textContent=P.n;b.dataset.pat=i;b.setAttribute('aria-pressed',i===0?'true':'false');
+    b.addEventListener('click',function(){if(state.running)return;if(!P.free&&!isMember()){toPlan('Extra breathing patterns are for members.');return}
+      state.pat=i;store('bv_pat',String(i));patEl.querySelectorAll('.chip').forEach(function(c,j){c.setAttribute('aria-pressed',j===i?'true':'false')});
+      $('patNote').textContent=P.note;count.textContent=patLabel()});
+    patEl.appendChild(b)});
+  $('patNote').textContent=PATTERNS[0].note;
+
+  /* ---- Calm check, log, journal, share ---- */
+  var calm={before:0,after:0};
+  function scale(id,cb){var el=$(id);for(var i=1;i<=10;i++){(function(v){var b=document.createElement('button');b.type='button';b.textContent=v;b.setAttribute('aria-pressed','false');
+    b.addEventListener('click',function(){el.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});cb(v)});el.appendChild(b)})(i)}}
+  scale('calmBefore',function(v){calm.before=v});
+  scale('calmAfter',function(v){calm.after=v;var L=logs();if(L.length){L[L.length-1].a=v;store('bv_log',JSON.stringify(L))}
+    $('calmDiff').textContent=calm.before?('Before '+calm.before+', now '+v+(v>calm.before?'. Up '+(v-calm.before)+'. Nice.':v===calm.before?'.':'.')):'Saved.';drawWeek()});
+  function logs(){try{return JSON.parse(store('bv_log')||'[]')}catch(e){return []}}
+  function logSession(){var L=logs();L.push({d:Date.now(),m:state.min,b:calm.before||0,a:0,p:PATTERNS[state.pat].k,t:state.integrate?'all':state.tone});if(L.length>400)L=L.slice(-400);store('bv_log',JSON.stringify(L))}
+  var PROMPTS={396:'What helps you feel safe and grounded today?',417:'What brought you joy or creativity today?',528:'Where did you trust yourself today?',639:'Who or what are you grateful for right now?',741:'What do you want to say that has not been said?',852:'What did you notice when your mind went quiet?',963:'What feels bigger than you today?',all:'How do all seven feel together today?'};
+  function showAfter(){var a=$('after');a.hidden=false;$('calmAfter').querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed','false')});$('calmDiff').textContent='';
+    $('jPrompt').textContent=PROMPTS[state.integrate?'all':state.tone]||PROMPTS[396];$('jText').value='';setTimeout(function(){a.scrollIntoView({behavior:'smooth',block:'center'})},600)}
+  function entries(){try{return JSON.parse(store('bv_journal')||'[]')}catch(e){return []}}
+  function drawEntries(){var E=entries(),el=$('entries');if(!E.length)return;el.innerHTML='';E.slice().reverse().slice(0,30).forEach(function(e){var d=document.createElement('div');var s=document.createElement('small');s.textContent=new Date(e.d).toLocaleDateString()+' · '+e.q;var p=document.createElement('span');p.textContent=e.x;d.appendChild(s);d.appendChild(p);el.appendChild(d)})}
+  $('jSave').addEventListener('click',function(){var x=$('jText').value.trim();if(!x){toast('Write a line first');return}var E=entries();E.push({d:Date.now(),q:$('jPrompt').textContent,x:x});store('bv_journal',JSON.stringify(E));$('jText').value='';drawEntries();toast('Saved to your journal')});
+  function streakInfo(){var o=load(),streak=0,dd=new Date();if(!o[key(dd)])dd.setDate(dd.getDate()-1);while(o[key(dd)]){streak++;dd.setDate(dd.getDate()-1)}return {streak:streak,days:Object.keys(o).filter(function(k){return o[k]>0}).length}}
+  function drawProgress(){var s=streakInfo();$('streakLine').textContent='🔥 '+s.streak+'-day streak · '+s.days+' day'+(s.days===1?'':'s')+' practised';
+    var L=logs().filter(function(x){return x.b&&x.a}).slice(-14),sp=$('spark');sp.innerHTML='';
+    if(L.length){var avg=0;L.forEach(function(x){avg+=x.a-x.b});avg/=L.length;$('calmLine').textContent='Average calm change over your last '+L.length+' checked session'+(L.length===1?'':'s')+': '+(avg>=0?'+':'')+avg.toFixed(1);
+      L.forEach(function(x){var i=document.createElement('i');i.style.height=Math.max(5,x.a*10)+'%';i.title='Before '+x.b+', after '+x.a;sp.appendChild(i)});sp.hidden=false}
+    else{$('calmLine').textContent='Use the calm check before and after a session to see your calm change here.';sp.hidden=true}}
+  function shareCard(){var s=streakInfo(),p=pathInfo(),cv=document.createElement('canvas');cv.width=1080;cv.height=1350;var x=cv.getContext('2d');
+    var g=x.createRadialGradient(540,300,50,540,600,900);g.addColorStop(0,'#3a1670');g.addColorStop(.5,'#140b33');g.addColorStop(1,'#07061a');x.fillStyle=g;x.fillRect(0,0,1080,1350);
+    for(var i=0;i<120;i++){x.fillStyle='rgba(255,255,255,'+(Math.random()*.7+.2)+')';x.beginPath();x.arc(Math.random()*1080,Math.random()*1350,Math.random()*2+.5,0,7);x.fill()}
+    TONES.forEach(function(t,i){x.shadowColor=t[2];x.shadowBlur=30;x.fillStyle=t[2];x.beginPath();x.arc(540,1060-i*110,30,0,7);x.fill()});x.shadowBlur=0;
+    x.textAlign='center';x.fillStyle='#ffd23f';x.font='700 96px Sora, Arial, sans-serif';x.shadowColor='#ffc400';x.shadowBlur=30;x.fillText('BIOVAGAL',540,150);x.shadowBlur=0;
+    x.fillStyle='#fff';x.font='800 150px Sora, Arial, sans-serif';x.fillText(s.streak,250,560);x.font='600 46px Figtree, Arial, sans-serif';x.fillText((s.streak===1?'day':'day')+' streak 🔥',250,630);
+    x.font='800 150px Sora, Arial, sans-serif';x.fillText(s.days,830,560);x.font='600 46px Figtree, Arial, sans-serif';x.fillText('days practised',830,630);
+    x.fillStyle='#ffcf6b';x.font='500 40px "IBM Plex Mono", monospace';x.fillText('Root to Integration · Stage '+(p.i+1)+': '+STAGES[p.i].name,540,1200);
+    x.fillStyle='#b4add6';x.font='500 38px "IBM Plex Mono", monospace';x.fillText('biovagal.co.uk',540,1280);
+    cv.toBlob(function(b){var f=new File([b],'biovagal-streak.png',{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],text:'My Biovagal breathing streak. biovagal.co.uk'}).catch(function(){})}
+      else{var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='biovagal-streak.png';document.body.appendChild(a);a.click();a.remove();toast('Image saved. Post it anywhere.')}},'image/png')}
+  $('shareBtn').addEventListener('click',shareCard);$('shareBtn2').addEventListener('click',shareCard);
+
+  /* ---- Brainwave bands ---- */
+  var brainEl=$('brain');
+  BRAIN.forEach(function(b,i){var x=document.createElement('button');x.className='chip small';x.type='button';x.textContent=b[0];x.setAttribute('aria-pressed',i===state.brain?'true':'false');
+    x.addEventListener('click',function(){if(!isMember()){toPlan('Brainwave bands are for members.');return}
+      state.brain=i;store('bv_brain',String(i));brainEl.querySelectorAll('.chip').forEach(function(c,j){c.setAttribute('aria-pressed',j===i?'true':'false')});
+      $('brainNote').textContent=b[0]+' · '+b[1]+' Hz beat. '+b[2];if(!$('bin').checked){$('bin').checked=true}if(state.running)startBin()});
+    brainEl.appendChild(x)});
+  (function(){var v=+(store('bv_brain')||2);if(v>=0&&v<BRAIN.length&&isMember()){state.brain=v;brainEl.querySelectorAll('.chip').forEach(function(c,j){c.setAttribute('aria-pressed',j===v?'true':'false')})}
+    var b=BRAIN[state.brain];$('brainNote').textContent=b[0]+' · '+b[1]+' Hz beat. '+b[2]})();
+
+  /* ---- Root to Integration path ---- */
+  var STAGES=TONES.map(function(t){return {name:t[1],hz:t[0],c:t[2]}}).concat([{name:'Integration',hz:'all',c:'#ffcf6b'}]);
+  function practised(){var o=load();return Object.keys(o).filter(function(k){return o[k]>0}).length}
+  function pathInfo(){var off=+(store('bv_path_off')||0),n=Math.max(0,practised()-off),i=Math.min(7,Math.floor(n/21));return {i:i,day:i===7?Math.min(21,n-147):n-i*21,total:n}}
+  function vidUrl(st){return 'https://www.youtube.com/@biovagal/search?query='+encodeURIComponent(st.hz==='all'?'integration':st.hz+' Hz')}
+  function drawPath(){
+    var p=pathInfo(),st=STAGES[p.i],ul=$('path');ul.innerHTML='';
+    $('pathNow').textContent='Stage '+(p.i+1)+' · '+st.name;
+    $('pathDays').textContent='Day '+p.day+' of 21';
+    $('pathBar').style.width=Math.round(p.day/21*100)+'%';
+    STAGES.forEach(function(s,i){
+      var li=document.createElement('li');li.style.setProperty('--d',s.c);li.className=i<p.i?'done':(i===p.i?'now':'');
+      li.innerHTML='<i></i><span><b>'+s.name+'</b><small>'+(s.hz==='all'?'All seven tones in turn':s.hz+' Hz')+' · weeks '+(i*3+1)+'–'+(i*3+3)+'</small></span><a href="'+vidUrl(s)+'" rel="noopener">Watch ▸</a>';
+      ul.appendChild(li);
+    });
+    $('pathGo').textContent=p.i===7?'Start integration':'Use '+st.name+' tone';
+  }
+  $('pathGo').addEventListener('click',function(){
+    if(state.running)return;var p=pathInfo();
+    if(!isMember()&&p.i>0){toPlan('The full Root to Integration path is for members.');return}
+    if(p.i===7){state.integrate=true;paint(TONES[0]);document.querySelectorAll('#tones .chip').forEach(function(x){x.setAttribute('aria-pressed','false')});toast('Integration: the tone moves through all seven chakras')}
+    else{var b=document.querySelector('#tones .chip[data-hz="'+STAGES[p.i].hz+'"]');if(b)b.click()}
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+  $('pathReset').addEventListener('click',function(){store('bv_path_off',String(practised()));drawPath();toast('Path restarted at Root')});
+  var _dw=drawWeek;drawWeek=function(){_dw();drawPath();drawProgress()};
+  (function(){var v=+(store('bv_pat')||0);if(v>0&&v<PATTERNS.length&&isMember()){state.pat=v;patEl.querySelectorAll('.chip').forEach(function(c,j){c.setAttribute('aria-pressed',j===v?'true':'false')});$('patNote').textContent=PATTERNS[v].note}
+    count.textContent=patLabel();drawEntries()})();
+
+  /* ---- Install + reminder ---- */
+  var deferred=null,isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent),standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e});
+  if(standalone){$('installBtn').hidden=true;$('installHint').hidden=false;$('installHint').textContent='Installed. Open Biovagal from your home screen any time.'}
+  $('installBtn').addEventListener('click',function(){
+    if(deferred){deferred.prompt();deferred.userChoice.then(function(){deferred=null});return}
+    $('installHint').hidden=false;
+    $('installHint').textContent=isIOS?'On iPhone: tap the Share button in Safari, then "Add to Home Screen".':'Open your browser menu (⋮) and choose "Install app" or "Add to Home screen".';
+  });
+  $('remBtn').addEventListener('click',function(){
+    var t=($('remTime').value||'20:00').split(':'),d=new Date();d.setHours(+t[0],+t[1],0,0);if(d<new Date())d.setDate(d.getDate()+1);
+    function pad(n){return (n<10?'0':'')+n}
+    var dt=d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'T'+pad(d.getHours())+pad(d.getMinutes())+'00';
+    var ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Biovagal//Reminder//EN','BEGIN:VEVENT','UID:bv-'+Date.now()+'@biovagal.co.uk','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z',
+      'DTSTART:'+dt,'DURATION:PT30M','RRULE:FREQ=DAILY','SUMMARY:Biovagal breathing','DESCRIPTION:30 minutes of slow breathing: https://biovagal.co.uk','URL:https://biovagal.co.uk',
+      'BEGIN:VALARM','TRIGGER:PT0M','ACTION:DISPLAY','DESCRIPTION:Time to breathe','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+    var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='biovagal-reminder.ics';document.body.appendChild(a);a.click();a.remove();
+    toast('Open the downloaded file to add the reminder');
+  });
+  if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});
+
   setClock();applyPlan();
   document.addEventListener('visibilitychange',function(){if(state.running&&document.visibilityState==='visible')lock()});
 })();
