@@ -251,6 +251,7 @@ textarea{width:100%;min-height:90px;font:15px/1.5 var(--font-body);color:var(--f
     <h2>Shop</h2>
     <p class="hint"><strong>Biovagal merch</strong>: tees, hoodies, mugs and stickers with the chakra and sacred-geometry designs. Printed on demand and shipped to your door.</p>
     <div class="links" style="flex-direction:column;gap:8px;margin-bottom:14px">
+      <p class="promo" data-until="2026-12-03T00:00:00Z" style="margin:0 0 8px;padding:8px 12px;border-radius:12px;background:linear-gradient(90deg,#ffd23f,#ff7a3d);color:#1a1030;font-weight:800;text-align:center">Grand opening: 25% off all merch until 2 Dec</p>
       <a class="item" href="https://biovagal.myspreadshop.co.uk/" target="_blank" rel="noopener">Biovagal merch shop <span>tees · hoodies · mugs ▸</span></a>
     </div>
     <p class="hint"><strong>Gear for your practice</strong></p>
@@ -580,5 +581,6 @@ textarea{width:100%;min-height:90px;font:15px/1.5 var(--font-body);color:var(--f
   document.addEventListener('visibilitychange',function(){if(state.running&&document.visibilityState==='visible')lock()});
 })();
 </script>
+<script>document.querySelectorAll(".promo[data-until]").forEach(function(e){if(Date.now()>Date.parse(e.dataset.until))e.remove()})</script>
 </body>
 </html>
